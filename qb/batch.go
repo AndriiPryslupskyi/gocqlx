@@ -24,6 +24,12 @@ type BatchBuilder struct {
 	using    using
 	stmts    []string
 	names    []string
+	Values   []batchEntrie
+}
+
+type batchEntrie struct {
+	Names []string
+	Args  interface{}
 }
 
 // Batch returns a new BatchBuilder.
@@ -61,6 +67,12 @@ func (b *BatchBuilder) ToCql() (stmt string, names []string) {
 
 // Add builds the builder and adds the statement to the batch.
 func (b *BatchBuilder) Add(builder Builder) *BatchBuilder {
+	return b.AddStmt(builder.ToCql())
+}
+
+// Add builds the builder and adds the statement to the batch.
+func (b *BatchBuilder) AddBatch(builder Builder, names []string, struc interface{}) *BatchBuilder {
+	b.Values = append(b.Values, batchEntrie{names, struc})
 	return b.AddStmt(builder.ToCql())
 }
 

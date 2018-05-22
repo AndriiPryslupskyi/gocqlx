@@ -13,6 +13,7 @@ import (
 
 	"github.com/gocql/gocql"
 	"github.com/jmoiron/sqlx/reflectx"
+	"github.com/scylladb/gocqlx/qb"
 )
 
 // CompileNamedQuery compiles a named query into an unbound query using the
@@ -105,6 +106,35 @@ func (q *Queryx) BindStruct(arg interface{}) *Queryx {
 	} else {
 		q.err = nil
 		q.Bind(arglist...)
+	}
+
+	return q
+}
+
+func (q *Queryx) BindBatch(batch *qb.BatchBuilder) *Queryx {
+	for _, b := range batch.Values {
+		arglist, err := bindStructArgs(b.Names, b.Args, nil, q.Mapper)
+		if err != nil {
+			q.err = fmt.Errorf("bind error: %s", err)
+		} else {
+			q.err = nil
+			q.Bind(arglist...)
+		}
+	}
+	return q
+}
+
+func (q *Queryx) BindSliceStruct(arg []interface{}) *Queryx {
+	for _, in := range arg {
+		arglist, err := bindStructArgs(q.Names, in, nil, q.Mapper)
+		if err != nil {
+			q.err = fmt.Errorf("bind error: %s", err)
+		} else {
+			q.err = nil
+			fmt.Println(q.Names)
+			fmt.Println()
+			q.Bind(arglist...)
+		}
 	}
 
 	return q
