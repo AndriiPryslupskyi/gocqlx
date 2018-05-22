@@ -111,6 +111,8 @@ func (q *Queryx) BindStruct(arg interface{}) *Queryx {
 	return q
 }
 
+// BindBatch binds prepared batch to values from batch's Values using mapper. If
+// value cannot be found error is reported.
 func (q *Queryx) BindBatch(batch *qb.BatchBuilder) *Queryx {
 	for _, b := range batch.Values {
 		arglist, err := bindStructArgs(b.Names, b.Args, nil, q.Mapper)
@@ -121,22 +123,6 @@ func (q *Queryx) BindBatch(batch *qb.BatchBuilder) *Queryx {
 			q.Bind(arglist...)
 		}
 	}
-	return q
-}
-
-func (q *Queryx) BindSliceStruct(arg []interface{}) *Queryx {
-	for _, in := range arg {
-		arglist, err := bindStructArgs(q.Names, in, nil, q.Mapper)
-		if err != nil {
-			q.err = fmt.Errorf("bind error: %s", err)
-		} else {
-			q.err = nil
-			fmt.Println(q.Names)
-			fmt.Println()
-			q.Bind(arglist...)
-		}
-	}
-
 	return q
 }
 

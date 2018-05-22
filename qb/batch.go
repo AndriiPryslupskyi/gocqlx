@@ -70,8 +70,8 @@ func (b *BatchBuilder) Add(builder Builder) *BatchBuilder {
 	return b.AddStmt(builder.ToCql())
 }
 
-// Add builds the builder and adds the statement to the batch.
-func (b *BatchBuilder) AddBatch(builder Builder, names []string, struc interface{}) *BatchBuilder {
+// AddToBatch adds builder, column's names and struct with data to batch.
+func (b *BatchBuilder) AddToBatch(builder Builder, names []string, struc interface{}) *BatchBuilder {
 	b.Values = append(b.Values, batchEntrie{names, struc})
 	return b.AddStmt(builder.ToCql())
 }
